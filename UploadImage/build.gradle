@@ -32,6 +32,9 @@ ext {
 android {
     compileSdk 32
 
+    buildFeatures {
+        viewBinding true
+    }
     defaultConfig {
         minSdk 21
         targetSdk 32
