@@ -6,16 +6,16 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
         tools:context=".UploadImageActivity">
 
         <ImageView
             android:id="@+id/preview"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:layout_height="500dp"
+            android:src="@drawable/ic_image_svgrepo_com"
             android:layout_gravity="center_horizontal"
             android:padding="8dp" />
 
@@ -25,6 +25,8 @@
             android:layout_height="wrap_content"
             android:gravity="center_horizontal"
             android:orientation="horizontal"
+            android:visibility="gone"
+            android:layout_below="@+id/preview"
             android:padding="8dp">
 
             <RadioButton
@@ -48,21 +50,24 @@
 
         </RadioGroup>
 
-        <androidx.constraintlayout.utils.widget.MotionButton
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/select"
+            android:layout_below="@+id/rGroup"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:backgroundTint="@color/cardview_light_background"
+            android:layout_marginStart="18dp"
             android:text="@string/select" />
 
-        <androidx.constraintlayout.utils.widget.MotionButton
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/done"
+            android:layout_below="@+id/rGroup"
+            android:layout_alignParentEnd="true"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginEnd="18dp"
             android:layout_gravity="center_horizontal"
-            android:backgroundTint="@color/cardview_light_background"
             android:text="@string/done" />
 
-    </LinearLayout>
+    </RelativeLayout>
 </androidx.core.widget.NestedScrollView>
