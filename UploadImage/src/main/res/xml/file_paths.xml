@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?><paths xmlns:android="http://schemas.android.com/apk/res/android">
+    <external-files-path name="my_images" path="/storage/emulated/0/Android/data/com.example.imagepicker/files/Documents/Image/image1.jpeg" />
+    <root-path name="root" path="." />
+</paths>
