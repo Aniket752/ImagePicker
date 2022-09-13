@@ -36,65 +36,76 @@ class GetImage : AppCompatActivity() {
     lateinit var finalFile: File
     private val result: ActivityResultLauncher<Intent> =
         registerForActivityResult(
-            ActivityResultContracts.StartActivityForResult(),
-            ActivityResultCallback<ActivityResult>() {
-                if (it.resultCode == RESULT_OK) {
-                    if (it.data == null) {
-                        binding.preview.setImageURI(finalFile.toUri())
-                        var bitmap = BitmapFactory.decodeFile(finalFile.absolutePath)
-                        bitmap.compress(Bitmap.CompressFormat.JPEG,100,FileOutputStream(finalFile))
-                        println(finalFile.length() / 1024 )
+            ActivityResultContracts.StartActivityForResult()
+        ) {
+            if (it.resultCode == RESULT_OK) {
+                if (it.data == null) {
+                    binding.preview.setImageURI(finalFile.toUri())
+                    var bitmap = BitmapFactory.decodeFile(finalFile.absolutePath)
+                    bitmap.compress(
+                        Bitmap.CompressFormat.JPEG,
+                        100,
+                        FileOutputStream(finalFile)
+                    )
+                    println(finalFile.length() / 1024)
+                    val com = 1024 * 1024
+                    intent1.data = finalFile.absolutePath.toUri()
+                    var size = finalFile.length() / com
+                    if (size > 2) {
+                        bitmap = BitmapFactory.decodeStream(FileInputStream(finalFile))
+                        var actuleSize = (2.0 / size.toFloat())
+                        size = (actuleSize * 100).toLong()
+                        println(actuleSize.toString() + " Com")
+                        bitmap.compress(
+                            Bitmap.CompressFormat.JPEG,
+                            size.toInt(),
+                            FileOutputStream(finalFile)
+                        )
+                    }
+                    binding.preview.setImageURI(finalFile.toUri())
+                } else {
+                    val uri = it.data?.data as Uri
+                    binding.preview.visibility = View.VISIBLE
+                    val path = this.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)
+                    try {
+                        val file = File(path, "/Image")
+                        file.mkdirs()
+                        val image = File(file.absolutePath, "image1.jpeg")
+                        intent1.data = image.absolutePath.toUri()
+                        var bitmap =
+                            BitmapFactory.decodeStream(this.contentResolver.openInputStream(uri))
+                        val out = FileOutputStream(image)
+                        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, out)
+                        println(image.length() / 1024)
                         val com = 1024 * 1024
-                        var size = finalFile.length() / com
-                        if(size > 2){
-                            bitmap = BitmapFactory.decodeStream(FileInputStream(finalFile))
+                        var size = image.length() / com
+                        if (size > 2) {
+                            bitmap = BitmapFactory.decodeStream(FileInputStream(image))
                             var actuleSize = (2.0 / size.toFloat())
                             size = (actuleSize * 100).toLong()
                             println(actuleSize.toString() + " Com")
-                            bitmap.compress(Bitmap.CompressFormat.JPEG,size.toInt() ,FileOutputStream(finalFile))
+                            bitmap.compress(
+                                Bitmap.CompressFormat.JPEG,
+                                size.toInt(),
+                                FileOutputStream(image)
+                            )
                         }
 
-//                        out.flush()
-//                        out.close()
-                        binding.preview.setImageURI(finalFile.toUri())
-                    }
-                    else {
-                        val uri = it.data?.data as Uri
-                        binding.preview.visibility = View.VISIBLE
-                        val path = this.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)
-                        try {
-                            val file = File(path, "/Image")
-                            file.mkdirs()
-                            val image = File(file.absolutePath, "image1.jpeg")
-                            intent1.data = image.absolutePath.toUri()
-                            var bitmap = BitmapFactory.decodeStream(this.contentResolver.openInputStream(uri))
-                            val out =  FileOutputStream(image)
-                            bitmap.compress(Bitmap.CompressFormat.JPEG,100,out)
-                            println(image.length() / 1024 )
-                            val com = 1024 * 1024
-                            var size = image.length() / com
-                            if(size > 2){
-                                bitmap = BitmapFactory.decodeStream(FileInputStream(image))
-                                var actuleSize = (2.0 / size.toFloat())
-                                size = (actuleSize * 100).toLong()
-                                println(actuleSize.toString() + " Com")
-                                bitmap.compress(Bitmap.CompressFormat.JPEG,size.toInt() ,FileOutputStream(image))
-                            }
-
-                            println(image.length())
-                            out.flush()
-                            out.close()
-                            binding.preview.setImageURI(image.toUri())
-                            println(image.absolutePath)
-                        } catch (e: Exception) {
-                            e.printStackTrace()
-                        }
-
+                        println(image.length())
+                        out.flush()
+                        out.close()
+                        finalFile = image
+                        binding.preview.setImageURI(image.toUri())
+                        println(image.absolutePath)
+                    } catch (e: Exception) {
+                        e.printStackTrace()
                     }
 
-                } else
-                    Toast.makeText(this, "Invalid data", Toast.LENGTH_LONG).show()
-            })
+                }
+
+            } else
+                Toast.makeText(this, "Invalid data", Toast.LENGTH_LONG).show()
+        }
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -112,33 +123,13 @@ class GetImage : AppCompatActivity() {
         binding.done.setOnClickListener {
 
             val bundle = Bundle().also {
-                it.putString("path", "hat")
+                it.putString("path", finalFile.absolutePath)
             }
             intent1.putExtra("path", bundle)
             setResult(RESULT_OK, intent1)
             finish()
 
         }
-    }
-
-    private fun showImage(bitmap: Bitmap) {
-        val path = this.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)
-        val file = File(path, "/Image")
-        file.mkdirs()
-        val image = File(file.absolutePath, "image1.jpeg")
-        val fileOutputStream = FileOutputStream(image)
-        try {
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fileOutputStream)
-            intent1.data = image.absolutePath.toUri()
-            binding.preview.setImageBitmap(bitmap)
-            fileOutputStream.flush()
-            fileOutputStream.close()
-        } catch (e: FileNotFoundException) {
-            e.printStackTrace();
-        } catch (e: Exception) {
-            e.printStackTrace();
-        }
-
     }
 
     private fun uploadImage() {
@@ -156,7 +147,12 @@ class GetImage : AppCompatActivity() {
             file.mkdirs()
             val image = File(file.absolutePath, "image1.jpeg")
             finalFile = image
-            result.launch(Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE_SECURE).putExtra(MediaStore.EXTRA_OUTPUT, FileProvider.getUriForFile(this,"com.example.imagepicker.provider",image)))
+            result.launch(
+                Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE_SECURE).putExtra(
+                    MediaStore.EXTRA_OUTPUT,
+                    FileProvider.getUriForFile(this, "com.example.imagepicker.provider", image)
+                )
+            )
         }
 
         dialogView.gallery.setOnClickListener {
