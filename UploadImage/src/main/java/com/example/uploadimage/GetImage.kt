@@ -150,7 +150,7 @@ class GetImage : AppCompatActivity() {
             result.launch(
                 Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE_SECURE).putExtra(
                     MediaStore.EXTRA_OUTPUT,
-                    FileProvider.getUriForFile(this, "com.example.imagepicker.provider", image)
+                    FileProvider.getUriForFile(this, application.packageName+".provider", image)
                 )
             )
         }
