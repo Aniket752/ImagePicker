@@ -15,6 +15,7 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.app.AppCompatDelegate.setDefaultNightMode
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.FileProvider
 import androidx.core.net.toUri
 import com.example.uploadimage.databinding.ActivityGetImageBinding
@@ -48,7 +49,7 @@ class GetImage : AppCompatActivity() {
                         if(it > 0){
                             if (actualSize > it) {
                                 bitmap = BitmapFactory.decodeStream(FileInputStream(finalFile))
-                                var actuleSize = (it.toFloat()/ actualSize.toFloat())
+                                val actuleSize = (it.toFloat()/ actualSize.toFloat())
                                 actualSize = (actuleSize * 100).toLong()
                                 bitmap.compress(
                                     Bitmap.CompressFormat.JPEG,
@@ -79,7 +80,7 @@ class GetImage : AppCompatActivity() {
                             if(it >0){
                                 if (actualSize > it) {
                                     bitmap = BitmapFactory.decodeStream(FileInputStream(image))
-                                    var actuleSize = (it.toFloat() / actualSize.toFloat())
+                                    val actuleSize = (it.toFloat() / actualSize.toFloat())
                                     actualSize = (actuleSize * 100).toLong()
                                     bitmap.compress(
                                         Bitmap.CompressFormat.JPEG,
@@ -110,7 +111,7 @@ class GetImage : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+        setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
 
         binding = ActivityGetImageBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -143,7 +144,7 @@ class GetImage : AppCompatActivity() {
         dialog.show()
 
         dialogView.camera.setOnClickListener {
-            binding.preview.setImageDrawable(getDrawable(R.drawable.ic_image_svgrepo_com))
+            binding.preview.setImageDrawable(AppCompatResources.getDrawable(this,R.drawable.ic_image_svgrepo_com))
             dialog.dismiss()
             val path = this.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)
             val file = File(path, "/Image")
@@ -151,7 +152,7 @@ class GetImage : AppCompatActivity() {
             val image = File(file.absolutePath, "image1.jpeg")
             finalFile = image
             result.launch(
-                Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE_SECURE).putExtra(
+                Intent(MediaStore.ACTION_IMAGE_CAPTURE_SECURE).putExtra(
                     MediaStore.EXTRA_OUTPUT,
                     FileProvider.getUriForFile(this, application.packageName + ".provider", image)
                 )
@@ -159,12 +160,12 @@ class GetImage : AppCompatActivity() {
         }
 
         dialogView.gallery.setOnClickListener {
-            binding.preview.setImageDrawable(getDrawable(R.drawable.ic_image_svgrepo_com))
+            binding.preview.setImageDrawable(AppCompatResources.getDrawable(this,R.drawable.ic_image_svgrepo_com))
             dialog.dismiss()
             result.launch(Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI))
         }
         dialogView.files.setOnClickListener {
-            binding.preview.setImageDrawable(getDrawable(R.drawable.ic_image_svgrepo_com))
+            binding.preview.setImageDrawable(AppCompatResources.getDrawable(this,R.drawable.ic_image_svgrepo_com))
             dialog.dismiss()
             result.launch(
                 Intent(Intent.ACTION_GET_CONTENT).setType("image/*")
