@@ -16,7 +16,9 @@ class MainActivity : AppCompatActivity() {
         image = findViewById(R.id.image)
         button = findViewById(R.id.start)
         button.setOnClickListener {
-            startActivityForResult(Intent(this,GetImage::class.java),100)
+            val intent = Intent(this,GetImage::class.java)
+            intent.putExtra("size",2)
+            startActivityForResult(intent,100)
         }
     }
 

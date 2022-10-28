@@ -1,8 +1,6 @@
 package com.example.uploadimage
 
-import android.app.Activity
 import android.app.AlertDialog
-import android.content.DialogInterface
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -11,20 +9,14 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
-import android.util.Log
 import android.view.View
-import android.widget.Button
 import android.widget.Toast
-import androidx.activity.result.ActivityResult
-import androidx.activity.result.ActivityResultCallback
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.app.AppCompatDelegate.setDefaultNightMode
 import androidx.core.content.FileProvider
 import androidx.core.net.toUri
-import androidx.databinding.DataBindingUtil
-import androidx.loader.content.CursorLoader
 import com.example.uploadimage.databinding.ActivityGetImageBinding
 import com.example.uploadimage.databinding.AlertDialogLayoutBinding
 import java.io.*
@@ -33,6 +25,7 @@ class GetImage : AppCompatActivity() {
 
     private lateinit var binding: ActivityGetImageBinding
     var intent1 = Intent()
+    var size: Int? = null
     lateinit var finalFile: File
     private val result: ActivityResultLauncher<Intent> =
         registerForActivityResult(
@@ -50,17 +43,20 @@ class GetImage : AppCompatActivity() {
                     println(finalFile.length() / 1024)
                     val com = 1024 * 1024
                     intent1.data = finalFile.absolutePath.toUri()
-                    var size = finalFile.length() / com
-                    if (size > 2) {
-                        bitmap = BitmapFactory.decodeStream(FileInputStream(finalFile))
-                        var actuleSize = (2.0 / size.toFloat())
-                        size = (actuleSize * 100).toLong()
-                        println(actuleSize.toString() + " Com")
-                        bitmap.compress(
-                            Bitmap.CompressFormat.JPEG,
-                            size.toInt(),
-                            FileOutputStream(finalFile)
-                        )
+                    var actualSize = finalFile.length() / com
+                    size?.let {
+                        if(it > 0){
+                            if (actualSize > it) {
+                                bitmap = BitmapFactory.decodeStream(FileInputStream(finalFile))
+                                var actuleSize = (it.toFloat()/ actualSize.toFloat())
+                                actualSize = (actuleSize * 100).toLong()
+                                bitmap.compress(
+                                    Bitmap.CompressFormat.JPEG,
+                                    actualSize.toInt(),
+                                    FileOutputStream(finalFile)
+                                )
+                            }
+                        }
                     }
                     binding.preview.setImageURI(finalFile.toUri())
                 } else {
@@ -78,17 +74,20 @@ class GetImage : AppCompatActivity() {
                         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, out)
                         println(image.length() / 1024)
                         val com = 1024 * 1024
-                        var size = image.length() / com
-                        if (size > 2) {
-                            bitmap = BitmapFactory.decodeStream(FileInputStream(image))
-                            var actuleSize = (2.0 / size.toFloat())
-                            size = (actuleSize * 100).toLong()
-                            println(actuleSize.toString() + " Com")
-                            bitmap.compress(
-                                Bitmap.CompressFormat.JPEG,
-                                size.toInt(),
-                                FileOutputStream(image)
-                            )
+                        var actualSize = image.length() / com
+                        size?.let {
+                            if(it >0){
+                                if (actualSize > it) {
+                                    bitmap = BitmapFactory.decodeStream(FileInputStream(image))
+                                    var actuleSize = (it.toFloat() / actualSize.toFloat())
+                                    actualSize = (actuleSize * 100).toLong()
+                                    bitmap.compress(
+                                        Bitmap.CompressFormat.JPEG,
+                                        actualSize.toInt(),
+                                        FileOutputStream(image)
+                                    )
+                                }
+                            }
                         }
 
                         println(image.length())
@@ -115,6 +114,10 @@ class GetImage : AppCompatActivity() {
 
         binding = ActivityGetImageBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        intent?.let {
+            size = it.getIntExtra("size", 0)
+        }
 
         binding.select.setOnClickListener {
             uploadImage()
@@ -150,7 +153,7 @@ class GetImage : AppCompatActivity() {
             result.launch(
                 Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE_SECURE).putExtra(
                     MediaStore.EXTRA_OUTPUT,
-                    FileProvider.getUriForFile(this, application.packageName+".provider", image)
+                    FileProvider.getUriForFile(this, application.packageName + ".provider", image)
                 )
             )
         }
