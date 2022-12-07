@@ -27,6 +27,7 @@ class GetImage : AppCompatActivity() {
     private lateinit var binding: ActivityGetImageBinding
     var intent1 = Intent()
     var size: Int? = null
+    var fileName : String? = null
     lateinit var finalFile: File
     private val result: ActivityResultLauncher<Intent> =
         registerForActivityResult(
@@ -41,7 +42,6 @@ class GetImage : AppCompatActivity() {
                         100,
                         FileOutputStream(finalFile)
                     )
-                    println(finalFile.length() / 1024)
                     val com = 1024 * 1024
                     intent1.data = finalFile.absolutePath.toUri()
                     var actualSize = finalFile.length() / com
@@ -60,6 +60,7 @@ class GetImage : AppCompatActivity() {
                         }
                     }
                     binding.preview.setImageURI(finalFile.toUri())
+                    binding.done.isEnabled = true
                 } else {
                     val uri = it.data?.data as Uri
                     binding.preview.visibility = View.VISIBLE
@@ -67,7 +68,9 @@ class GetImage : AppCompatActivity() {
                     try {
                         val file = File(path, "/Image")
                         file.mkdirs()
-                        val image = File(file.absolutePath, "image1.jpeg")
+                        val image =  if (fileName == null) File(file.absolutePath, "image1.jpeg")
+                        else
+                            File(file.absolutePath, "$fileName.jpeg")
                         intent1.data = image.absolutePath.toUri()
                         var bitmap =
                             BitmapFactory.decodeStream(this.contentResolver.openInputStream(uri))
@@ -90,13 +93,11 @@ class GetImage : AppCompatActivity() {
                                 }
                             }
                         }
-
-                        println(image.length())
                         out.flush()
                         out.close()
                         finalFile = image
                         binding.preview.setImageURI(image.toUri())
-                        println(image.absolutePath)
+                        binding.done.isEnabled = true
                     } catch (e: Exception) {
                         e.printStackTrace()
                     }
@@ -118,6 +119,7 @@ class GetImage : AppCompatActivity() {
 
         intent?.let {
             size = it.getIntExtra("size", 0)
+            fileName = it.getStringExtra("name")
         }
 
         binding.select.setOnClickListener {
@@ -149,7 +151,8 @@ class GetImage : AppCompatActivity() {
             val path = this.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)
             val file = File(path, "/Image")
             file.mkdirs()
-            val image = File(file.absolutePath, "image1.jpeg")
+            val image = if(fileName == null) File(file.absolutePath, "image1.jpeg")
+            else File(file.absolutePath, "$fileName.jpeg")
             finalFile = image
             result.launch(
                 Intent(MediaStore.ACTION_IMAGE_CAPTURE_SECURE).putExtra(
