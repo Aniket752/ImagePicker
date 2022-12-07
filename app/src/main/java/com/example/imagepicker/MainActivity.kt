@@ -18,6 +18,7 @@ class MainActivity : AppCompatActivity() {
         button.setOnClickListener {
             val intent = Intent(this,GetImage::class.java)
             intent.putExtra("size",2)
+            intent.putExtra("name","Aniket")
             startActivityForResult(intent,100)
         }
     }
