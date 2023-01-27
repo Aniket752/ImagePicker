@@ -34,7 +34,7 @@ class GetImage : AppCompatActivity() {
             ActivityResultContracts.StartActivityForResult()
         ) {
             if (it.resultCode == RESULT_OK) {
-                if (it.data == null) {
+                if (it.data?.data == null) {
                     binding.preview.setImageURI(finalFile.toUri())
                     var bitmap = BitmapFactory.decodeFile(finalFile.absolutePath)
                     bitmap.compress(
@@ -153,6 +153,7 @@ class GetImage : AppCompatActivity() {
             file.mkdirs()
             val image = if(fileName == null) File(file.absolutePath, "image1.jpeg")
             else File(file.absolutePath, "$fileName.jpeg")
+            println(image.absolutePath +" Path")
             finalFile = image
             result.launch(
                 Intent(MediaStore.ACTION_IMAGE_CAPTURE_SECURE).putExtra(
