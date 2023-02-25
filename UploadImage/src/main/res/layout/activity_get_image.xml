@@ -11,10 +11,20 @@
         android:layout_height="match_parent"
         tools:context=".UploadImageActivity">
 
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="To be abel to Read Data from image please upload image in vertical "
+            android:gravity="center_horizontal"
+            android:id="@+id/dataMsg"
+            android:textColor="#000"
+            />
+
         <ImageView
             android:id="@+id/preview"
             android:layout_width="match_parent"
             android:layout_height="500dp"
+            android:layout_below="@+id/dataMsg"
             android:src="@drawable/ic_image_svgrepo_com"
             android:layout_gravity="center_horizontal"
             android:padding="8dp" />
@@ -50,7 +60,7 @@
 
         </RadioGroup>
 
-        <com.google.android.material.button.MaterialButton
+        <Button
             android:id="@+id/select"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -60,7 +70,22 @@
             android:minWidth="48dp"
             android:text="@string/select" />
 
-        <com.google.android.material.button.MaterialButton
+        <ImageView
+            android:id="@+id/rotate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/rGroup"
+            android:gravity="center_horizontal"
+            android:minWidth="48dp"
+            android:clickable="false"
+            android:padding="15dp"
+            android:visibility="gone"
+            android:src="@drawable/ic_rotate_foreground"
+            android:layout_centerHorizontal="true"
+            android:text="Rotate" />
+
+
+        <Button
             android:id="@+id/done"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

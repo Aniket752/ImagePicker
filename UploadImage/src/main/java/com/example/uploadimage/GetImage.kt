@@ -4,6 +4,8 @@ import android.app.AlertDialog
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.BitmapShader
+import android.graphics.Matrix
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -61,6 +63,7 @@ class GetImage : AppCompatActivity() {
                     }
                     binding.preview.setImageURI(finalFile.toUri())
                     binding.done.isEnabled = true
+                    binding.rotate.visibility = View.VISIBLE
                 } else {
                     val uri = it.data?.data as Uri
                     binding.preview.visibility = View.VISIBLE
@@ -96,8 +99,10 @@ class GetImage : AppCompatActivity() {
                         out.flush()
                         out.close()
                         finalFile = image
-                        binding.preview.setImageURI(image.toUri())
+                        binding.preview.setImageURI(finalFile.toUri())
                         binding.done.isEnabled = true
+                        binding.rotate.visibility = View.VISIBLE
+                        println(finalFile.absolutePath)
                     } catch (e: Exception) {
                         e.printStackTrace()
                     }
@@ -135,6 +140,21 @@ class GetImage : AppCompatActivity() {
             setResult(RESULT_OK, intent1)
             finish()
 
+        }
+
+        binding.rotate.setOnClickListener {
+            var bitmap = BitmapFactory.decodeFile(finalFile.absolutePath)
+            val matrix = Matrix()
+            matrix.postRotate(90f)
+            val image = Bitmap.createBitmap(bitmap,0,0,bitmap.width,bitmap.height,matrix,true)
+            val file = FileOutputStream(finalFile)
+            image.compress(
+                Bitmap.CompressFormat.JPEG,
+                100,
+                file
+            )
+            file.close()
+            binding.preview.setImageBitmap(image)
         }
     }
 
